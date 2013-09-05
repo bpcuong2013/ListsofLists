@@ -1,0 +1,52 @@
+<div class="span6 f-form-container">
+	<%= form_for(resource, :as => resource_name, :url => registration_path(resource_name), :html => { :method => :put, :class => "form-horizontal f-form" }) do |f| %>
+		<fieldset>
+			<legend>Change your password</legend>
+			<div class="control-group">
+				<div class="control-label">
+					<label>Email</label>
+				</div>
+				<div class="controls">
+					<input type="hidden" value="<%= current_user.email %>" name="user[email]">
+					<input type="text" id="user_email" name="user[email]" class="input-large" value=<%= current_user.email %> disabled>
+				</div>
+			</div>
+
+			<div class="control-group">
+				<div class="control-label">
+					<label>Password</label>
+				</div>
+				<div class="controls">
+					<input type="password" id="user_password" name="user[password]" placeholder="Password" class="input-large">
+					<br/>
+					<span>(leave blank if you don't want to change it)</span>
+				</div>
+			</div>
+
+			<div class="control-group">
+				<div class="control-label">
+					<label>Password confirmation</label>
+				</div>
+				<div class="controls">
+					<input type="password" id="user_password_confirmation" name="user[password_confirmation]" placeholder="Password confirmation" class="input-large">
+				</div>
+			</div>
+
+			<div class="control-group">
+				<div class="control-label">
+					<label>Current password</label>
+				</div>
+				<div class="controls">
+					<input type="password" id="user_current_password" name="user[current_password]" placeholder="Current password" class="input-large">
+				</div>
+			</div>
+
+			<div class="control-group">
+				<div class="controls">
+					<button type="submit" id="submit" class="btn btn-primary button-loading" data-loading-text="Loading...">Change password</button>
+				</div>
+			</div>
+		</fieldset>
+	<% end %>
+  	<%= devise_error_messages! %>
+</div>

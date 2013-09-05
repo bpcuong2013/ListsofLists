@@ -1,0 +1,37 @@
+<div class="span6 f-form-container">
+	<%= form_for(resource, :as => resource_name, :url => password_path(resource_name), :html => { :method => :put, :class => "form-horizontal f-form" }) do |f| %>
+		<fieldset>
+			<legend>Change your password</legend>
+			<div class="control-group">
+				<div class="control-label">
+					<label>New password</label>
+				</div>
+				<div class="controls">
+					<%= f.hidden_field :reset_password_token %>
+					<input type="password" id="user_password" name="user[password]" placeholder="Password" class="input-large">
+				</div>
+			</div>
+			
+			<div class="control-group">
+				<div class="control-label">
+					<label>Confirm new password</label>
+				</div>
+				<div class="controls">
+					<input type="password" id="user_password_confirmation" name="user[password_confirmation]" placeholder="Confirm new password" class="input-large">
+				</div>
+			</div>
+
+			<div class="control-group">
+				<div class="controls">
+					<button type="submit" id="submit" class="btn btn-primary button-loading" data-loading-text="Loading...">Change my password</button>
+				</div>
+			</div>
+			<div class="control-group">
+				<div class="controls">
+					<%= render "devise/shared/links" %>
+				</div>
+			</div>
+		</fieldset>
+	<% end %>
+  	<%= devise_error_messages! %>
+</div>

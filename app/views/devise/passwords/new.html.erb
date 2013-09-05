@@ -1,0 +1,27 @@
+<div class="span6 f-form-container">
+	<%= form_for(resource, :as => resource_name, :url => password_path(resource_name), :html => { :method => :post, :class => "form-horizontal f-form" }) do |f| %>
+		<fieldset>
+			<legend>Forgot your password?</legend>
+			<div class="control-group">
+				<div class="control-label">
+					<label>Email</label>
+				</div>
+				<div class="controls">
+					<input type="text" id="user_email" name="user[email]" placeholder="john.doe@youremail.com" class="input-large">
+				</div>
+			</div>
+
+			<div class="control-group">
+				<div class="controls">
+					<button type="submit" id="submit" class="btn btn-primary button-loading" data-loading-text="Loading...">Submit</button>
+				</div>
+			</div>
+			<div class="control-group">
+				<div class="controls">
+					<%= render "devise/shared/links" %>
+				</div>
+			</div>
+		</fieldset>
+	<% end %>
+  	<%= devise_error_messages! %>
+</div>

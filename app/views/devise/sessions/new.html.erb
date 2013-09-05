@@ -1,0 +1,56 @@
+<div class="span6 f-form-container">
+	<%= form_for(resource, :as => resource_name, :url => session_path(resource_name), :html => { :method => :post, :class => "form-horizontal f-form" }) do |f| %>
+		<fieldset>
+			<legend>Login</legend>
+			<div class="control-group">
+				<div class="control-label">
+					<label>Email</label>
+				</div>
+				<div class="controls">
+					<input type="text" id="user_email" name="user[email]" placeholder="john.doe@youremail.com" class="input-large">
+				</div>
+			</div>
+
+			<div class="control-group">
+				<div class="control-label">
+					<label>Password</label>
+				</div>
+				<div class="controls">
+					<input type="password" id="user_password" name="user[password]" placeholder="type your password" class="input-large">
+				</div>
+			</div>
+			<div class="control-group">
+				<div class="control-label">
+					<input name="user[remember_me]" type="hidden" value="0">
+				</div>
+				<div class="controls">
+					<input id="user_remember_me" name="user[remember_me]" type="checkbox" value="1">
+					<label for="user_remember_me" class="remember_me">Remember me</label>
+				</div>
+			</div>
+			<div class="control-group">
+				<div class="controls">
+					<button type="submit" id="submit" class="btn btn-primary button-loading" data-loading-text="Loading...">Login</button>
+				</div>
+			</div>
+			<div class="control-group">
+				<div class="controls">
+					<%= render "devise/shared/links" %>
+				</div>
+			</div>
+			<div class="control-group external-login-service">
+	            <a href="/accounts/auth/facebook"><%= image_tag "facebook_64.png", :size => "64x64",  :alt => "Facebook" %>Facebook</a>
+	            <a href="/accounts/auth/google_oauth2"><%= image_tag "google_64.png", :size => "64x64",  :alt => "Google" %>Google</a>
+	            <a href="/accounts/auth/twitter"><%= image_tag "twitter_64.png", :size => "64x64",  :alt => "Twitter" %>Twitter</a>
+		    </div>
+		</fieldset>
+    <% end %>
+	<div id="error_explanation">
+	  	<% flash.each do |name, msg| %>
+	  	<% if msg != "You need to sign in or sign up before continuing."%>
+	    	<%= content_tag :section, msg, :id => "flash_#{name}", :class => "flash" %>
+	    <% end%>
+    </div>
+<% end %>
+
+</div>
