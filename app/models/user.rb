@@ -1,5 +1,6 @@
 class User < ActiveRecord::Base
   has_many :services, :dependent => :destroy
+  has_many :favoritelists, :dependent => :destroy
   
   devise :database_authenticatable, :omniauthable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable,
