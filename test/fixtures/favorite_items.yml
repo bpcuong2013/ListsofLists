@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  name: MyString
+  favoritelist_id: 1
+  rankeditem_id: 1
+
+two:
+  name: MyString
+  favoritelist_id: 1
+  rankeditem_id: 1
