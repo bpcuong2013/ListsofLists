@@ -7,12 +7,14 @@ ListsofLists::Application.routes.draw do
                                       :sign_out       => "logout",
                                       :sign_up        => "register",
                                       :password       => "secret",
-                                      :confirmation     => "verification"
+                                      :confirmation   => "verification"
                                 }
 
-  root :to                                    => 'report#index'
-  get '/'                                   => 'report#index'
-  match '/accounts/auth/facebook/callback'        => 'report#create'
-  match '/accounts/auth/google_oauth2/callback'       => 'report#create'
-  match '/accounts/auth/twitter/callback'         => 'report#create'
+  root :to                                      => 'services#index'
+  get '/'                                       => 'services#index'
+  post '/'                                      => 'services#index'
+  match '/accounts/auth/facebook/callback'      => 'services#create'
+  match '/accounts/auth/google_oauth2/callback' => 'services#create'
+  match '/accounts/auth/twitter/callback'       => 'services#create'
+  get   '/home/:usage_security_token'           => 'report#index'
 end

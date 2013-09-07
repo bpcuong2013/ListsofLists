@@ -1,5 +1,5 @@
 Rails.application.config.middleware.use OmniAuth::Builder do  
-  provider :facebook, '191891907656283', 'a3ee1055a71ccac7e00b5e47890230d5'  
-  provider :google_oauth2, '190344210531.apps.googleusercontent.com','rpcxTWvqVoPBeBiBoReatYIt'
-  provider :twitter, 'YKYkboAnAxdaGGv57jHw', 'XIh1D7EsWyCdUXybRSCByT4abs1tBwamCc15pH3cg'
+  provider :facebook, '644473238897361', '433f4574a7cc28dd670886b4c5175dc6'  
+  provider :google_oauth2, '1027665096433.apps.googleusercontent.com','VC0aEfQMINad1wNNSTEYq9YB'
+  provider :twitter, 'TTNBI2EFPDb8M4TkZMww', 'kjQO578wIagDNVzdDex9j1nb1Ipk1bV9FXQRbk4hRc'
 end

@@ -34,4 +34,24 @@ ListsofLists::Application.configure do
 
   # Expands the lines which load the assets
   config.assets.debug = true
+
+config.action_mailer.default_url_options = { :host => 'localhost:3000' }
+  
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = {
+      address:              'smtp.gmail.com',
+      port:                 587,
+      domain:               'gmail.com',
+      user_name:            'noreply19812013@gmail.com',
+      password:             'g0g0away!',
+      authentication:       'plain',
+      enable_starttls_auto: true  
+  }
 end
+  
+Net::SMTP.enable_tls(OpenSSL::SSL::VERIFY_NONE)
+
+ActionMailer::Base.delivery_method = :smtp
+ActionMailer::Base.perform_deliveries = true
+ActionMailer::Base.raise_delivery_errors = true
+
