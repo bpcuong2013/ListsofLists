@@ -16,5 +16,5 @@ ListsofLists::Application.routes.draw do
   match '/accounts/auth/facebook/callback'      => 'services#create'
   match '/accounts/auth/google_oauth2/callback' => 'services#create'
   match '/accounts/auth/twitter/callback'       => 'services#create'
-  get   '/home/:usage_security_token'           => 'report#index'
+  get   '/home/:usage_security_token'           => 'favorite_list#index'
 end
