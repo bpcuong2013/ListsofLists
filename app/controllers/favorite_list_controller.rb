@@ -9,7 +9,7 @@ class FavoriteListController < ApplicationController
       if @usage_security_token != current_user.usage_security_token
         @error_message = "Access is denied. Please login and follow the message is sent to your email to continue using the system."
       else
-        
+        @favorite_list = FavoriteList.find_by_user_id(current_user.id)
       end
       rescue Exception => ex
         @error_message = ex.message

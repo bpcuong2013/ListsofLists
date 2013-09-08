@@ -1,4 +1,5 @@
 class Canberra
+  # Canberra distance
   def distance(u, v)
     n = u.length - 1
     sum = 0.0
@@ -12,5 +13,10 @@ class Canberra
     end
     
     return sum;
+  end
+  
+  # Qualified canberra distance
+  def distanceq(u, v)
+    
   end
 end
