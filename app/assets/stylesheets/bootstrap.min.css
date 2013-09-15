@@ -186,6 +186,7 @@ a.label:hover,a.label:focus,a.badge:hover,a.badge:focus{color:#ffffff;text-decor
 .label-info[href],.badge-info[href]{background-color:#2d6987;}
 .label-inverse,.badge-inverse{background-color:#333333;}
 .label-inverse[href],.badge-inverse[href]{background-color:#1a1a1a;}
+.label-italic{font-style: italic;}
 .btn .label,.btn .badge{position:relative;top:-1px;}
 .btn-mini .label,.btn-mini .badge{top:0;}
 table{max-width:100%;background-color:transparent;border-collapse:collapse;border-spacing:0;}

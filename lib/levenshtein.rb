@@ -20,14 +20,14 @@ class Levenshtein
           dm[i][j] = dm[i-1][j-1] # no operation required
         else
           dm[i][j] = [
-                        d[i-1][j] + 1, # deletion
-                        d[i][j-1] + 1, # insertion
-                        d[i-1][j-1] + 1 # substitution
+                        dm[i-1][j] + 1, # deletion
+                        dm[i][j-1] + 1, # insertion
+                        dm[i-1][j-1] + 1 # substitution
                      ].min
         end
       end
     end
     
-    d[m][n]
+    dm[m][n]
   end
 end

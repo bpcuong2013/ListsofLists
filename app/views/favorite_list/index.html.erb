@@ -1,21 +1,43 @@
 <div class="">
 	<h1>Favorite lists</h1>
-	<div class="control-group list_container">
+	<div class="control-group list_container" id="divFavoriteList">
 	</div>
-	<button class="btn btn-primary btn-large" data-dismiss="modal" id="addFavoriteList">Add new favorite list...</button>
+	<button class="btn btn-primary btn-large" data-dismiss="modal" id="btnAddFavoriteList">Add new favorite list...</button>
 	<div class="processing"></div>	
 </div>
 
-<div id="createFavoriteList" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div id="divCreateFavoriteList" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 	<div class="modal-header">
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
 		<h3>Create new favorite list</h3>
 	</div>
 	<div class="modal-body">
-		
+		<div class="control-group">
+			<label class="control-label label-italic">NOTE: To refresh the similar lists, please hit ENTER on favorite list name field.</label>
+		</div>
+		<div class="control-group">
+			<label class="control-label" for="listName">Favorite list name</label>
+			<input ty="text" id="listName" name="listName" placeholder="Favorite list name" class="input-block-level" required />
+		</div>
+		<div class="control-group">
+			<label class="control-label">Please select one of similar lists if you want</label>
+			<select class="input-block-level" id="selectSimilarFavoriteList" name="selectSimilarFavoriteList">
+			</select>
+		</div>
+		<div class="control-group">
+			<div id="load-favorite-list-processing" class="processing"></div>
+		</div>
 	</div>
 	<div class="modal-footer">
-		<button class="btn btn-primary"></button>
+		<button class="btn btn-primary" id="saveFavoriteList">Next</button>
+		<button class="btn" data-dismiss="modal">Cancel</button>
+	</div>
+</div>
+
+<div id="divCreateItemList" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+		<h3>Create favorite items</h3>
 	</div>
 </div>
 
@@ -40,27 +62,80 @@
 	}
 
 	function renderList(data){
-		$("div.list_container").html("");
+		$("#divFavoriteList").html("");
 		var columns = new Array();
 		columns.push({ field: "id", key: true, visible: false });
 		columns.push({ field: "name", display: "List name" });
-		columns.push({ display: "", width: "25%", align: "center", customTemplateFunc: actionColumn });
+		columns.push({ display: "", width: "30%", align: "center", customTemplateFunc: actionColumn });
 		
-		new GridView($("div.list_container"), columns, data, "No favorite lists found under your account", null, null);
+		new GridView($("#divFavoriteList"), columns, data, "No favorite lists found under your account", null, null);
 		$("div.list_container table").addClass("table");
 		$("div.list_container table").addClass("table-bordered");
 	}
 		
 	function actionColumn(rowObj){
 		return "<a href='#viewDetail' list_id='" + rowObj.id + "'>View detail</a> | " + 
-			   "<a href='#showCorrelation' list_id='" + rowObj.id + "'>Show correlated lists</a>";
+			   "<a href='#showCorrelation' list_id='" + rowObj.id + "'>Show correlated lists</a> | " +
+			   "<a href='#delete' list_id='" + rowObj.id + "'>Delete</a>";
+	}
+	
+	function renderSimilarList(data) {
+		$("#selectSimilarFavoriteList").html("");
+		$("#selectSimilarFavoriteList").append($("<option></option>").attr("value", -1).text("Please select an item"));
+		
+		var count = data == null ? 0 : data.length;
+		if (count > 0) {
+			for (var index = 0; index < count; index++) {
+				var id = data[index].id;
+				var name = data[index].name;
+				$("#selectSimilarFavoriteList").append($("<option></option>").attr("value", id).text(name));
+			}
+		}
 	}
 		
 	$(document).ready(function(){
 		loadFavoriteLists();
 		
-		$("#addFavoriteList").click(function (e){
+		$("#btnAddFavoriteList").click(function (e){
+			$("#divCreateFavoriteList").modal({
+				backdrop: 'static',
+				keyboard: true
+			});
 			
+			$("#divCreateFavoriteList #listName").val("");
+			$("#divCreateFavoriteList #listName").focus();		
+			$("#divCreateFavoriteList #selectSimilarFavoriteList").html("");
+		});
+		
+		$("#divCreateFavoriteList #listName").keypress(function(e) {
+			var keyCode = (window.Event) ? e.which : e.keyCode;
+			if (keyCode == 13) {
+				var listname = $.trim($("#divCreateFavoriteList #listName").val());
+				if (listname != ""){
+					$("#load-favorite-list-processing").html(getProcessingHtml("Fetching data...", __RootURL));
+					$.ajax({
+						url: "<%= url_for(controller: "favorite_list", action: "spellcheck_list") %>",
+						type: "GET",
+						data: { listName: listname },
+						success: function(result) {
+							if (result.success) {
+								$("#load-favorite-list-processing").html("");
+								renderSimilarList(result.data);
+							}
+							else {
+								$("#load-favorite-list-processing").html(getErrorHtml(result.msg));	
+							}
+						},
+						error: function() {
+							$("#load-favorite-list-processing").html(getErrorHtml());
+						}
+					});
+				}
+			}
+		});
+		
+		$("#divCreateFavoriteList #saveFavoriteList").click(function(e) {
+			e.preventDefault();
 		});
 	});
 	

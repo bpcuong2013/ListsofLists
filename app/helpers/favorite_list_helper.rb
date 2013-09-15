@@ -6,11 +6,12 @@ module FavoriteListHelper
       lower_bound = m - tolerance_limit
       upper_bound = m + tolerance_limit
       result = []
+      levenshtein = Levenshtein.new
       
       lists.each do |list|
         n = list.name.length
         if lower_bound <= n && n <= upper_bound
-          levenshtein_distance = Levenshtein.new.distance(favoriteName, list.name)
+          levenshtein_distance = levenshtein.distance(favoriteName, list.name)
           if levenshtein_distance <= tolerance_limit
             result.push list
           end
@@ -26,11 +27,12 @@ module FavoriteListHelper
       lower_bound = m - tolerance_limit
       upper_bound = m + tolerance_limit
       result = []
+      levenshtein = Levenshtein.new
       
       items.each do |item|
         n = item.name.length
         if lower_bound <= n && n <= upper_bound
-          levenshtein_distance = Levenshtein.new.distance(favoriteName, item.name)
+          levenshtein_distance = levenshtein.distance(favoriteName, item.name)
           if levenshtein_distance <= tolerance_limit
             result.push item
           end
