@@ -12,15 +12,15 @@ class FavoriteListController < ApplicationController
     #end
     respond_to do |format|
       format.json {
-          render :json => {:success => true, :data => @favorite_list}
+        render :json => { :success => true, :data => @favorite_list }
       }
     end
   rescue Exception => ex
     logger.fatal "Exception in get_favorite_list action: " + ex.message
     respond_to do |format|
-        format.json {
-            render :json => {:success => false, :msg => ex.message}
-        }
+      format.json {
+        render :json => { :success => false, :msg => ex.message }
+      }
     end
   end
   
@@ -30,15 +30,15 @@ class FavoriteListController < ApplicationController
     @favorite_list = SpellChecker.new.findList(listName, allList)
     respond_to do |format|
       format.json {
-          render :json => {:success => true, :data => @favorite_list}
+        render :json => { :success => true, :data => @favorite_list }
       }
     end
   rescue Exception => ex
     logger.fatal "Exception in spellcheck_list action: " + ex.message
     respond_to do |format|
-        format.json {
-            render :json => {:success => false, :msg => ex.message}
-        }
+      format.json {
+        render :json => { :success => false, :msg => ex.message }
+      }
     end
   end
   
@@ -49,15 +49,32 @@ class FavoriteListController < ApplicationController
     @favorite_items = SpellChecker.new.findItem(itemName, allItems)
     respond_to do |format|
       format.json {
-          render :json => {:success => true, :data => @favorite_items}
+        render :json => { :success => true, :data => @favorite_items }
       }
     end
   rescue Exception => ex
     logger.fatal "Exception in spellcheck_item action: " + ex.message
     respond_to do |format|
-        format.json {
-            render :json => {:success => false, :msg => ex.message}
-        }
+      format.json {
+        render :json => { :success => false, :msg => ex.message }
+      }
+    end
+  end
+  
+  def create_favorite_list
+    typeId = params[:typeId]
+    listName = params[:listName]
+    respond_to do |format|
+      format.json {
+        render :json => { :success => true }
+      }
+    end
+  rescue Exception => ex
+    logger.fatal "Exception in create_favorite_list action: " + ex.message
+    respond_to do |format|
+      format.json {
+        render :json => { :success => false, :msg => ex.message }
+      }
     end
   end
   
