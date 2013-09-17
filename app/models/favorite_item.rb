@@ -1,5 +1,5 @@
 class FavoriteItem < ActiveRecord::Base
-  belongs_to :favoritelist
-  belongs_to :rankeditem
-  attr_accessible :id, :favoritelist_id, :name, :rankeditem_id
+  belongs_to :favorite_list
+  belongs_to :ranked_item
+  attr_accessible :id, :favorite_list_id, :name, :ranked_item_id
 end

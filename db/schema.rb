@@ -15,25 +15,25 @@ ActiveRecord::Schema.define(:version => 20130907164038) do
 
   create_table "favorite_items", :force => true do |t|
     t.string   "name"
-    t.integer  "favoritelist_id"
-    t.integer  "rankeditem_id"
-    t.datetime "created_at",      :null => false
-    t.datetime "updated_at",      :null => false
+    t.integer  "favorite_list_id"
+    t.integer  "ranked_item_id"
+    t.datetime "created_at",       :null => false
+    t.datetime "updated_at",       :null => false
   end
 
   create_table "favorite_lists", :force => true do |t|
     t.string   "name"
-    t.integer  "rankedlist_id"
+    t.integer  "ranked_list_id"
     t.integer  "user_id"
-    t.datetime "created_at",    :null => false
-    t.datetime "updated_at",    :null => false
+    t.datetime "created_at",     :null => false
+    t.datetime "updated_at",     :null => false
   end
 
   create_table "ranked_items", :force => true do |t|
     t.string   "name"
-    t.integer  "rankedlist_id"
-    t.datetime "created_at",    :null => false
-    t.datetime "updated_at",    :null => false
+    t.integer  "ranked_list_id"
+    t.datetime "created_at",     :null => false
+    t.datetime "updated_at",     :null => false
   end
 
   create_table "ranked_lists", :force => true do |t|

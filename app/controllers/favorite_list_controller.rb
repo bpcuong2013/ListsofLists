@@ -45,7 +45,7 @@ class FavoriteListController < ApplicationController
   def spellcheck_item
     typeId = params[:typeId]
     itemName = params[:itemName]
-    allItems = RankedItem.find_all_by_rankedlist_id(typeId)
+    allItems = RankedItem.find_all_by_ranked_list_id(typeId)
     @favorite_items = SpellChecker.new.findItem(itemName, allItems)
     respond_to do |format|
       format.json {
@@ -64,6 +64,21 @@ class FavoriteListController < ApplicationController
   def create_favorite_list
     typeId = params[:typeId]
     listName = params[:listName]
+    items = params[:items]
+    
+    if typeId == ""
+      rankedList = RankedList.new :name => listName
+      rankedList.favorite_lists.build(:name => listName, :user_id => current_user.id)
+      
+      items.each do |item|
+        rankedList.ranked_items.build(:name => item[:name])
+      end
+      
+      rankedList.save
+    else
+      
+    end
+    
     respond_to do |format|
       format.json {
         render :json => { :success => true }

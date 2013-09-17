@@ -155,6 +155,16 @@
 		// Clear the options and add the sorted ones
 		$("#divCreateItemList #yourFavoriteItems").empty().html(sortedList);
 	}
+	
+	function getArrayOfFavoriteItems() {
+		var arrayOfItems = [];
+		$("#divCreateItemList #yourFavoriteItems option").each(function() {
+			var obj = { id: this.value, name: this.text };
+			arrayOfItems.push(obj);
+		});
+		
+		return arrayOfItems;
+	}
 		
 	$(document).ready(function(){
 		loadFavoriteLists();
@@ -295,6 +305,7 @@
 			} else {
 				var listName = $("#divCreateItemList #hiddenListName").val();
 				var typeId = $("#divCreateItemList #hiddenTypeId").val();
+				var items = getArrayOfFavoriteItems();
 				
 				$("#load-favorite-item-processing").html(getProcessingHtml("Saving data...", __RootURL));
 				$.ajax({
@@ -303,7 +314,7 @@
 					beforeSend: function(xhr) {
 						xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'));
 					},
-					data: JSON.stringify({ typeId: typeId, listName: listName, items: {} }),
+					data: JSON.stringify({ typeId: typeId, listName: listName, items: items }),
 					contentType: "application/json; charset=utf-8",
 					success: function(result) {
 						if (result.success) {
