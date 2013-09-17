@@ -1,7 +1,6 @@
 <div class="">
 	<h1>Favorite lists</h1>
-	<div class="control-group list_container" id="divFavoriteList">
-	</div>
+	<div class="control-group list_container" id="divFavoriteList"></div>
 	<button class="btn btn-primary btn-large" data-dismiss="modal" id="btnAddFavoriteList">Add new favorite list...</button>
 	<div class="processing"></div>	
 </div>
@@ -13,16 +12,15 @@
 	</div>
 	<div class="modal-body">
 		<div class="control-group">
-			<label class="control-label label-italic">NOTE: To refresh the similar lists, please hit ENTER on favorite list name field.</label>
+			<label class="control-label label-italic">NOTE: To refresh the similar existing types, please hit ENTER on favorite list name field.</label>
 		</div>
 		<div class="control-group">
 			<label class="control-label" for="listName">Favorite list name</label>
-			<input ty="text" id="listName" name="listName" placeholder="Favorite list name" class="input-block-level" required />
+			<input type="text" maxlength="255" id="listName" name="listName" placeholder="Favorite list name" class="input-block-level" required />
 		</div>
 		<div class="control-group">
-			<label class="control-label">Please select one of similar lists if you want</label>
-			<select class="input-block-level" id="selectSimilarFavoriteList" name="selectSimilarFavoriteList">
-			</select>
+			<label class="control-label">Please select one of similar existing types if you want</label>
+			<select class="input-block-level" id="selectSimilarFavoriteList" name="selectSimilarFavoriteList"></select>
 		</div>
 		<div class="control-group">
 			<div id="load-favorite-list-processing" class="processing"></div>
@@ -30,7 +28,7 @@
 	</div>
 	<div class="modal-footer">
 		<button class="btn btn-primary" id="saveFavoriteList">Next</button>
-		<button class="btn" data-dismiss="modal">Cancel</button>
+		<button class="btn" data-dismiss="modal" id="cancelFavoriteList">Cancel</button>
 	</div>
 </div>
 
@@ -38,6 +36,34 @@
 	<div class="modal-header">
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
 		<h3>Create favorite items</h3>
+	</div>
+	<div class="modal-body">
+		<input type="hidden" id="hiddenListName" name="hiddenListName" />
+		<input type="hidden" id="hiddenTypeId" name="hiddenTypeId" />
+		<div class="control-group">
+			<label class="control-label label-italic">NOTE: To refresh the similar existing items, please hit ENTER on favorite item name field.</label>
+		</div>
+		<div class="control-group">
+			<label class="control-label" for="itemName">Favorite item name</label>
+			<input type="text" maxlength="255" id="itemName" name="itemName" placeholder="Favorite item name" class="input-block-level" required />
+		</div>
+		<div class="control-group" id="divSelectSimilarItem">
+			<label class="control-label">Please select one of similar existing items if you want</label>
+			<select class="input-block-level" id="selectSimilarFavoriteItem" name="selectSimilarFavoriteItem"></select>
+		</div>
+		<button class="btn btn-primary" id="btnAddFavoriteItem">Add</button>
+		<div class="control-group">
+			<br />
+			<label class="control-label">Your favorite items</label>
+			<select class="input-block-level" size="5" id="yourFavoriteItems" name="yourFavoriteItems" multiple="multiple"></select>
+		</div>
+		<div class="control-group">
+			<div id="load-favorite-item-processing" class="processing"></div>
+		</div>
+	</div>
+	<div class="modal-footer">
+		<button class="btn btn-primary" id="saveFavoriteItems">Save</button>
+		<button class="btn" data-dismiss="modal">Cancel</button>
 	</div>
 </div>
 
@@ -79,7 +105,7 @@
 			   "<a href='#delete' list_id='" + rowObj.id + "'>Delete</a>";
 	}
 	
-	function renderSimilarList(data) {
+	function renderSimilarLists(data) {
 		$("#selectSimilarFavoriteList").html("");
 		$("#selectSimilarFavoriteList").append($("<option></option>").attr("value", -1).text("Please select an item"));
 		
@@ -89,6 +115,20 @@
 				var id = data[index].id;
 				var name = data[index].name;
 				$("#selectSimilarFavoriteList").append($("<option></option>").attr("value", id).text(name));
+			}
+		}
+	}
+	
+	function renderSimilarItems(data) {
+		$("#selectSimilarFavoriteItem").html("");
+		$("#selectSimilarFavoriteItem").append($("<option></option>").attr("value", -1).text("Please select an item"));
+		
+		var count = data == null ? 0 : data.length;
+		if (count > 0) {
+			for (var index = 0; index < count; index++) {
+				var id = data[index].id;
+				var name = data[index].name;
+				$("#selectSimilarFavoriteItem").append($("<option></option>").attr("value", id).text(name));
 			}
 		}
 	}
@@ -110,17 +150,17 @@
 		$("#divCreateFavoriteList #listName").keypress(function(e) {
 			var keyCode = (window.Event) ? e.which : e.keyCode;
 			if (keyCode == 13) {
-				var listname = $.trim($("#divCreateFavoriteList #listName").val());
-				if (listname != ""){
+				var listName = $.trim($("#divCreateFavoriteList #listName").val());
+				if (listName != "") {
 					$("#load-favorite-list-processing").html(getProcessingHtml("Fetching data...", __RootURL));
 					$.ajax({
 						url: "<%= url_for(controller: "favorite_list", action: "spellcheck_list") %>",
 						type: "GET",
-						data: { listName: listname },
+						data: { listName: listName },
 						success: function(result) {
 							if (result.success) {
 								$("#load-favorite-list-processing").html("");
-								renderSimilarList(result.data);
+								renderSimilarLists(result.data);
 							}
 							else {
 								$("#load-favorite-list-processing").html(getErrorHtml(result.msg));	
@@ -135,6 +175,77 @@
 		});
 		
 		$("#divCreateFavoriteList #saveFavoriteList").click(function(e) {
+			e.preventDefault();
+			var listName = $.trim($("#divCreateFavoriteList #listName").val());
+			if (listName == "") {
+				alert("Favorite list name is required.");
+				$("#divCreateFavoriteList #listName").focus();
+			} else {
+				var typeId = $("#divCreateFavoriteList #selectSimilarFavoriteList").val();
+				if (typeId == null || typeId == undefined) {
+					typeId = "";
+				}
+				
+				$("#divCreateFavoriteList #cancelFavoriteList").trigger("click");
+				
+				$("#divCreateItemList").modal({
+					backdrop: 'static',
+					keyboard: true
+				});
+				
+				$("#divCreateItemList #hiddenListName").val(listName);
+				$("#divCreateItemList #hiddenTypeId").val(typeId);
+				$("#divCreateItemList #itemName").val("");
+				$("#divCreateItemList #itemName").focus();
+				$("#divCreateItemList #selectSimilarFavoriteItem").html("");
+				if (typeId == "" || typeId == -1) {
+					$("#divCreateItemList #divSelectSimilarItem").hide();
+				} else {
+					$("#divCreateItemList #divSelectSimilarItem").show();
+				}
+			}
+		});
+		
+		$("#divCreateItemList #itemName").keypress(function(e) {
+			var keyCode = (window.Event) ? e.which : e.keyCode;
+			if (keyCode == 13) {
+				var itemName = $.trim($("#divCreateItemList #itemName").val());
+				var typeId = $.trim($("#divCreateItemList #hiddenTypeId").val());
+				if (itemName != "" && typeId != "" && typeId != -1) {
+					$("#load-favorite-item-processing").html(getProcessingHtml("Fetching data...", __RootURL));
+					$.ajax({
+						url: "<%= url_for(controller: "favorite_list", action: "spellcheck_item") %>",
+						type: "GET",
+						data: { typeId: typeId, itemName: itemName },
+						success: function(result) {
+							if (result.success) {
+								$("#load-favorite-item-processing").html("");
+								renderSimilarItems(result.data);
+							}
+							else {
+								$("#load-favorite-item-processing").html(getErrorHtml(result.msg));	
+							}
+						},
+						error: function() {
+							$("#load-favorite-item-processing").html(getErrorHtml());
+						}
+					});
+				}
+			}
+		});
+		
+		$("#divCreateItemList #btnAddFavoriteItem").click(function(e) {
+			e.preventDefault();
+			var itemName = $.trim($("#divCreateItemList #itemName").val());
+			if (itemName == "") {
+				alert("Favorite item name is required.");
+				$("#divCreateItemList #itemName").focus();
+			} else {
+				
+			}
+		});
+		
+		$("#divCreateItemList #saveFavoriteItems").click(function(e) {
 			e.preventDefault();
 		});
 	});

@@ -7,6 +7,9 @@ class FavoriteListController < ApplicationController
   
   def get_favorite_list
     @favorite_list = FavoriteList.find_all_by_user_id(current_user.id)
+    #@favorite_list.each do |list|
+    #  list.type_name = RankedList.find_by_id(list.rankedlist_id).name
+    #end
     respond_to do |format|
       format.json {
           render :json => {:success => true, :data => @favorite_list}
@@ -39,13 +42,28 @@ class FavoriteListController < ApplicationController
     end
   end
   
-  #def spellcheck_item
+  def spellcheck_item
+    typeId = params[:typeId]
+    itemName = params[:itemName]
+    allItems = RankedItem.find_all_by_rankedlist_id(typeId)
+    @favorite_items = SpellChecker.new.findItem(itemName, allItems)
+    respond_to do |format|
+      format.json {
+          render :json => {:success => true, :data => @favorite_items}
+      }
+    end
+  rescue Exception => ex
+    logger.fatal "Exception in spellcheck_item action: " + ex.message
+    respond_to do |format|
+        format.json {
+            render :json => {:success => false, :msg => ex.message}
+        }
+    end
+  end
+  
+  #def get_favorite_list_detail
     
   #end
-  
-  def get_favorite_list_detail
-    
-  end
   
   #def show_correlate
     
