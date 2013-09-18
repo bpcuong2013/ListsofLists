@@ -14,9 +14,12 @@ class Levenshtein
     # Initialize first column values
     (0..n).each { |j| dm[0][j] = j }
     
+    sl = s.downcase
+    tl = t.downcase
+    
     (1..n).each do |j|
       (1..m).each do |i|
-        if s[i-1] == t[j-1] # adjust index into string
+        if sl[i-1] == tl[j-1] # adjust index into string
           dm[i][j] = dm[i-1][j-1] # no operation required
         else
           dm[i][j] = [
