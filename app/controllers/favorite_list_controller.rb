@@ -6,13 +6,29 @@ class FavoriteListController < ApplicationController
   end
   
   def get_favorite_list
-    @favorite_list = FavoriteList.find_all_by_user_id(current_user.id)
-    #@favorite_list.each do |list|
-    #  list.type_name = RankedList.find_by_id(list.rankedlist_id).name
-    #end
+    favorite_list = FavoriteList.find_all_by_user_id(current_user.id)
+    ranked_list = { }
+    @my_favorite_list = []
+    
+    favorite_list.each do |list|
+      #list.type_name = RankedList.find_by_id(list.ranked_list_id).name
+      #list.ranked_list = RankedList.find_by_id(list.ranked_list_id)
+      
+      if !ranked_list.has_key?(list.ranked_list_id)
+        ranked_list[list.ranked_list_id.to_s] = RankedList.find_by_id(list.ranked_list_id)
+      end
+      
+      myFavoriteList = MyFavoriteList.new
+      myFavoriteList.id = list.id
+      myFavoriteList.name = list.name
+      myFavoriteList.type_id = list.ranked_list_id
+      myFavoriteList.type_name = ranked_list[list.ranked_list_id.to_s].name
+      
+      @my_favorite_list.push myFavoriteList
+    end
     respond_to do |format|
       format.json {
-        render :json => { :success => true, :data => @favorite_list }
+        render :json => { :success => true, :data => @my_favorite_list }
       }
     end
   rescue Exception => ex
@@ -120,6 +136,24 @@ class FavoriteListController < ApplicationController
     end
   rescue Exception => ex
     logger.fatal "Exception in delete_favorite_list action: " + ex.message
+    respond_to do |format|
+      format.json {
+        render :json => { :success => false, :msg => ex.message }
+      }
+    end
+  end
+  
+  def get_favorite_list_detail
+    listId = params[:id]
+    @favorite_items = FavoriteItem.find_all_by_favorite_list_id(listId)
+    
+    respond_to do |format|
+      format.json {
+        render :json => { :success => true, :data => @favorite_items }
+      }
+    end
+  rescue Exception => ex
+    logger.fatal "Exception in get_favorite_list_detail action: " + ex.message
     respond_to do |format|
       format.json {
         render :json => { :success => false, :msg => ex.message }

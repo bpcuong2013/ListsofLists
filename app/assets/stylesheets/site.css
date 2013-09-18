@@ -13,7 +13,7 @@
 .header{border-bottom: 4px solid #CCC;overflow:hidden;}
 .header .panel{float:right: overflow:hidden;}
 .header .panel .user-info{margin-top:5px; text-align:right;}
-.header .panel .title{font-size: 22pt; font-weight:bold; margin-top: 40px; font-style:italic; float:left; margin-bottom: 10px;}
+.header .panel .title{font-size: 32pt; font-weight:bold; margin-top: 40px; font-style:italic; float:left; margin-bottom: 10px;}
 .content{margin:20px 0px 20px 0px;}
 .form {margin-top: 20px;}
 .info-dialog{width:600px;}

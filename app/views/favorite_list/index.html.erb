@@ -1,5 +1,5 @@
 <div class="">
-	<h1>Favorite lists</h1>
+	<h2>Favorite lists</h2>
 	<div class="control-group list_container" id="divFavoriteList"></div>
 	<button class="btn btn-primary btn-large" data-dismiss="modal" id="btnAddFavoriteList">Add new favorite list...</button>
 	<div class="processing"></div>	
@@ -17,6 +17,33 @@
 	<div class="modal-footer">
 		<button class="btn btn-danger" data-dismiss="modal" id="deleteFavoriteList">Yes</button>
 		<button class="btn btn-primary" data-dismiss="modal">Cancel</button>
+	</div>
+</div>
+
+<div id="divViewDetail" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+		<h3>Your favorite list</h3>
+	</div>
+	<div class="modal-body">
+		<div class="control-group">
+			<label class="control-label" for="viewListName">List name</label>
+			<input type="text" id="viewListName" name="viewListName" class="input-block-level" readonly="true" />
+		</div>
+		<div class="control-group">
+			<label class="control-label" for="viewCategoryName">Category</label>
+			<input type="text" id="viewCategoryName" name="viewCategoryName" class="input-block-level" readonly="true" />
+		</div>
+		<div class="control-group">
+			<label class="control-label">Favorite items</label>
+			<select class="input-block-level" size="5" id="viewFavoriteItems" name="viewFavoriteItems"></select>
+		</div>
+		<div class="control-group">
+			<div id="view-load-favorite-item-processing" class="processing"></div>
+		</div>
+	</div>
+	<div class="modal-footer">
+		<button class="btn btn-primary" data-dismiss="modal">OK</button>
 	</div>
 </div>
 
@@ -99,7 +126,7 @@
 			error: function(){
 				$("div.processing").html(getErrorHtml());
 			}
-		});	
+		});
 	}
 
 	function renderList(data) {
@@ -107,6 +134,7 @@
 		var columns = new Array();
 		columns.push({ field: "id", key: true, visible: false });
 		columns.push({ field: "name", display: "List name" });
+		columns.push({ field: "type_name", display: "Category" });
 		columns.push({ display: "", width: "30%", align: "center", customTemplateFunc: actionColumn });
 		
 		new GridView($("#divFavoriteList"), columns, data, "No favorite lists found under your account", null, null);
@@ -123,12 +151,56 @@
 			
 			$("#hiddenDeletedId").val($(this).attr("id"));
 		});
+		
+		$("a[class='view_detail_list']").click(function(e) {
+			e.preventDefault();
+			
+			$("#divViewDetail").modal({
+				backdrop: 'static',
+				keyboard: true
+			});
+			
+			var favoriteListId = $(this).attr("id");
+			$("#divViewDetail #viewListName").val($(this).find("#name").attr("value"));
+			$("#divViewDetail #viewCategoryName").val($(this).find("#type_name").attr("value"));
+			$("#divViewDetail #viewFavoriteItems").empty();
+			
+			$("#view-load-favorite-item-processing").html(getProcessingHtml("Fetching items...", __RootURL));
+			$.ajax({
+				url: "<%= url_for(controller: "favorite_list", action: "get_favorite_list_detail") %>",
+				type: "GET",
+				data: { id: favoriteListId },
+				success: function(result) {
+					if (result.success) {
+						$("#view-load-favorite-item-processing").html("");
+						viewFavoriteItems(result.data);
+					} else {
+						$("#view-load-favorite-item-processing").html(getErrorHtml(result.msg));	
+					}
+				},
+				error: function(){
+					$("#view-load-favorite-item-processing").html(getErrorHtml());
+				}
+			});
+		});
+		
+		$("a[class='show_correlation']").click(function(e) {
+			e.preventDefault();
+			alert("This functionality has not been implemented yet.");
+		});
 	}
 		
 	function actionColumn(rowObj) {
-		return "<a href='#viewDetail' id='" + rowObj.id + "'>View detail</a> | " + 
-			   "<a href='#showCorrelation' id='" + rowObj.id + "'>Show correlated lists</a> | " +
-			   "<a class='delete_list' id='" + rowObj.id + "'>Delete</a>";
+		var view_link = "<a class='view_detail_list' id='" + rowObj.id + "'>View detail" +
+							"<input type='hidden' id='name' value='" + rowObj.name + "' />" +
+							"<input type='hidden' id='type_name' value='" + rowObj.type_name + "' />" +
+						"</a>";
+		var correlate_link = "<a class='show_correlation' id='" + rowObj.id + "'>Show correlated lists" +
+								"<input type='hidden' id='name' value='" + rowObj.name + "' />" +
+								"<input type='hidden' id='type_name' value='" + rowObj.type_name + "' />" +
+							 "</a>";
+		var delete_link = "<a class='delete_list' id='" + rowObj.id + "'>Delete</a>";
+	    return view_link + " | " + correlate_link + " | " + delete_link;
 	}
 	
 	function renderSimilarLists(data) {
@@ -189,6 +261,19 @@
 		});
 		
 		return arrayOfItems;
+	}
+	
+	function viewFavoriteItems(data) {
+		$("#viewFavoriteItems").html("");
+		
+		var count = data == null ? 0 : data.length;
+		if (count > 0) {
+			for (var index = 0; index < count; index++) {
+				var id = data[index].id;
+				var name = data[index].name;
+				$("#viewFavoriteItems").append($("<option></option>").attr("value", id).text(name));
+			}
+		}
 	}
 		
 	$(document).ready(function() {
