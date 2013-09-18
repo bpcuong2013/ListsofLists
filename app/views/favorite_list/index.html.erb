@@ -5,6 +5,21 @@
 	<div class="processing"></div>	
 </div>
 
+<div id="divConfirmDelete" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+		<h3>Delete your favorite list</h3>
+	</div>
+	<div class="modal-body">
+		<input type="hidden" id="hiddenDeletedId" name="hiddenDeletedId" />
+		<p>Are you sure you want to delete this list?</p>
+	</div>
+	<div class="modal-footer">
+		<button class="btn btn-danger" data-dismiss="modal" id="deleteFavoriteList">Yes</button>
+		<button class="btn btn-primary" data-dismiss="modal">Cancel</button>
+	</div>
+</div>
+
 <div id="divCreateFavoriteList" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 	<div class="modal-header">
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
@@ -69,16 +84,15 @@
 </div>
 
 <script language="javascript" type="text/javascript">
-	function loadFavoriteLists(){
+	function loadFavoriteLists() {
 		$("div.processing").html(getProcessingHtml("Fetching list...", __RootURL));
 		$.ajax({
 			url: "<%= url_for(controller: "favorite_list", action: "get_favorite_list") %>",
-			success: function(result){
-				if (result.success){
+			success: function(result) {
+				if (result.success) {
 					$("div.processing").html("");
 					renderList(result.data);
-				}
-				else{
+				} else {
 					$("div.processing").html(getErrorHtml(result.msg));	
 				}
 			},
@@ -88,7 +102,7 @@
 		});	
 	}
 
-	function renderList(data){
+	function renderList(data) {
 		$("#divFavoriteList").html("");
 		var columns = new Array();
 		columns.push({ field: "id", key: true, visible: false });
@@ -98,12 +112,23 @@
 		new GridView($("#divFavoriteList"), columns, data, "No favorite lists found under your account", null, null);
 		$("div.list_container table").addClass("table");
 		$("div.list_container table").addClass("table-bordered");
+		
+		$("a[class='delete_list']").click(function(e) {
+			e.preventDefault();
+			
+			$("#divConfirmDelete").modal({
+				backdrop: 'static',
+				keyboard: true
+			});
+			
+			$("#hiddenDeletedId").val($(this).attr("id"));
+		});
 	}
 		
-	function actionColumn(rowObj){
-		return "<a href='#viewDetail' list_id='" + rowObj.id + "'>View detail</a> | " + 
-			   "<a href='#showCorrelation' list_id='" + rowObj.id + "'>Show correlated lists</a> | " +
-			   "<a href='#delete' list_id='" + rowObj.id + "'>Delete</a>";
+	function actionColumn(rowObj) {
+		return "<a href='#viewDetail' id='" + rowObj.id + "'>View detail</a> | " + 
+			   "<a href='#showCorrelation' id='" + rowObj.id + "'>Show correlated lists</a> | " +
+			   "<a class='delete_list' id='" + rowObj.id + "'>Delete</a>";
 	}
 	
 	function renderSimilarLists(data) {
@@ -166,10 +191,32 @@
 		return arrayOfItems;
 	}
 		
-	$(document).ready(function(){
+	$(document).ready(function() {
 		loadFavoriteLists();
 		
-		$("#btnAddFavoriteList").click(function (e){
+		$("#deleteFavoriteList").click(function(e) {
+			var deletedId = $("#hiddenDeletedId").val();
+			$("div.processing").html(getProcessingHtml("Deleting list...", __RootURL));
+			$.ajax({
+				url: "<%= url_for(controller: "favorite_list", action: "delete_favorite_list") %>",
+				type: "GET",
+				data: { id: deletedId },
+				success: function(result) {
+					if (result.success){
+						$("div.processing").html("");
+						loadFavoriteLists();
+					}
+					else{
+						$("div.processing").html(getErrorHtml(result.msg));	
+					}
+				},
+				error: function() {
+					$("div.processing").html(getErrorHtml());
+				}
+			});
+		});
+		
+		$("#btnAddFavoriteList").click(function(e) {
 			$("#divCreateFavoriteList").modal({
 				backdrop: 'static',
 				keyboard: true

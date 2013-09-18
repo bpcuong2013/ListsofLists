@@ -68,15 +68,31 @@ class FavoriteListController < ApplicationController
     
     if typeId == ""
       rankedList = RankedList.new :name => listName
-      rankedList.favorite_lists.build(:name => listName, :user_id => current_user.id)
+      favoriteList = rankedList.favorite_lists.build(:name => listName, :user_id => current_user.id)
       
       items.each do |item|
-        rankedList.ranked_items.build(:name => item[:name])
+        rankedItem = rankedList.ranked_items.build(:name => item[:name])
+        #rankedItem.favorite_items.build(:name => item[:name], :favorite_list => favoriteList)
+        favoriteItem = rankedItem.favorite_items.build(:name => item[:name])
+        favoriteItem.favorite_list = favoriteList
       end
       
       rankedList.save
     else
+      rankedList = RankedList.find_by_id(typeId)
+      favoriteList = rankedList.favorite_lists.build(:name => listName, :user_id => current_user.id)
       
+      items.each do |item|
+        if item[:id] == ""
+          rankedItem = rankedList.ranked_items.build(:name => item[:name])
+          favoriteItem = rankedItem.favorite_items.build(:name => item[:name])
+          favoriteItem.favorite_list = favoriteList
+        else
+          favoriteList.favorite_items.build(:name => item[:name], :ranked_item_id => item[:id])
+        end
+      end
+      
+      rankedList.save
     end
     
     respond_to do |format|
@@ -93,9 +109,23 @@ class FavoriteListController < ApplicationController
     end
   end
   
-  #def get_favorite_list_detail
+  def delete_favorite_list
+    listId = params[:id]
+    FavoriteList.destroy(listId)
     
-  #end
+    respond_to do |format|
+      format.json {
+        render :json => { :success => true }
+      }
+    end
+  rescue Exception => ex
+    logger.fatal "Exception in delete_favorite_list action: " + ex.message
+    respond_to do |format|
+      format.json {
+        render :json => { :success => false, :msg => ex.message }
+      }
+    end
+  end
   
   #def show_correlate
     
