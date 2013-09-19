@@ -2,7 +2,23 @@
 	<h2>Favorite lists</h2>
 	<div class="control-group list_container" id="divFavoriteList"></div>
 	<button class="btn btn-primary btn-large" data-dismiss="modal" id="btnAddFavoriteList">Add new favorite list...</button>
-	<div class="processing"></div>	
+	<div id="divMainProcessing" class="processing"></div>	
+</div>
+<br />
+<div id="divCorrelation">
+	<h2>Correlated favorite lists</h2>
+	<div class="control-group">
+		<label class="control-label" for="viewCorrListName">List name</label>
+		<input type="text" id="viewCorrListName" name="viewCorrListName" class="input-block-level" readonly="true" />
+	</div>
+	<div class="control-group">
+		<label class="control-label" for="viewCorrCategoryName">Category</label>
+		<input type="text" id="viewCorrCategoryName" name="viewCorrCategoryName" class="input-block-level" readonly="true" />
+	</div>
+	<div class="control-group">
+		<label class="control-label">Correlated lists</label>
+		<div class="list_container" id="divCorrFavoriteList"></div>
+	</div>
 </div>
 
 <div id="divConfirmDelete" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -112,19 +128,20 @@
 
 <script language="javascript" type="text/javascript">
 	function loadFavoriteLists() {
-		$("div.processing").html(getProcessingHtml("Fetching list...", __RootURL));
+		$("#divCorrelation").hide();
+		$("#divMainProcessing").html(getProcessingHtml("Fetching list...", __RootURL));
 		$.ajax({
 			url: "<%= url_for(controller: "favorite_list", action: "get_favorite_list") %>",
 			success: function(result) {
 				if (result.success) {
-					$("div.processing").html("");
+					$("#divMainProcessing").html("");
 					renderList(result.data);
 				} else {
-					$("div.processing").html(getErrorHtml(result.msg));	
+					$("#divMainProcessing").html(getErrorHtml(result.msg));	
 				}
 			},
 			error: function(){
-				$("div.processing").html(getErrorHtml());
+				$("#divMainProcessing").html(getErrorHtml());
 			}
 		});
 	}
@@ -186,7 +203,30 @@
 		
 		$("a[class='show_correlation']").click(function(e) {
 			e.preventDefault();
-			alert("This functionality has not been implemented yet.");
+			
+			var favoriteListId = $(this).attr("id");
+			$("#divCorrelation").show();
+			$("#divCorrelation #viewCorrListName").val($(this).find("#name").attr("value"));
+			$("#divCorrelation #viewCorrCategoryName").val($(this).find("#type_name").attr("value"));
+			$("#divCorrelation #divCorrFavoriteList").html("");
+			
+			$("#divMainProcessing").html(getProcessingHtml("Calculating correlation...", __RootURL));
+			$.ajax({
+				url: "<%= url_for(controller: "favorite_list", action: "show_correlate") %>",
+				type: "GET",
+				data: { id: favoriteListId },
+				success: function(result) {
+					if (result.success) {
+						$("#divMainProcessing").html("");
+						renderCorrelatedLists(result.data);
+					} else {
+						$("#divMainProcessing").html(getErrorHtml(result.msg));	
+					}
+				},
+				error: function(){
+					$("#divMainProcessing").html(getErrorHtml());
+				}
+			});
 		});
 	}
 		
@@ -275,28 +315,41 @@
 			}
 		}
 	}
+	
+	function renderCorrelatedLists(data) {
+		$("#divCorrelation #divCorrFavoriteList").html("");
+		var columns = new Array();
+		columns.push({ field: "id", key: true, visible: false });
+		columns.push({ field: "name", display: "List name" });
+		columns.push({ field: "owner_name", display: "Owner" });
+		columns.push({ field: "canberra_value", display: "Canberra value" });
+		
+		new GridView($("#divCorrelation #divCorrFavoriteList"), columns, data, "No correlated lists found", null, null);
+		$("div.list_container table").addClass("table");
+		$("div.list_container table").addClass("table-bordered");
+	}
 		
 	$(document).ready(function() {
 		loadFavoriteLists();
 		
 		$("#deleteFavoriteList").click(function(e) {
 			var deletedId = $("#hiddenDeletedId").val();
-			$("div.processing").html(getProcessingHtml("Deleting list...", __RootURL));
+			$("#divMainProcessing").html(getProcessingHtml("Deleting list...", __RootURL));
 			$.ajax({
 				url: "<%= url_for(controller: "favorite_list", action: "delete_favorite_list") %>",
 				type: "GET",
 				data: { id: deletedId },
 				success: function(result) {
 					if (result.success){
-						$("div.processing").html("");
+						$("#divMainProcessing").html("");
 						loadFavoriteLists();
 					}
 					else{
-						$("div.processing").html(getErrorHtml(result.msg));	
+						$("#divMainProcessing").html(getErrorHtml(result.msg));	
 					}
 				},
 				error: function() {
-					$("div.processing").html(getErrorHtml());
+					$("#divMainProcessing").html(getErrorHtml());
 				}
 			});
 		});
@@ -307,6 +360,7 @@
 				keyboard: true
 			});
 			
+			$("#load-favorite-list-processing").html("");
 			$("#divCreateFavoriteList #listName").val("");
 			$("#divCreateFavoriteList #listName").focus();		
 			$("#divCreateFavoriteList #selectSimilarFavoriteList").html("");
@@ -358,6 +412,7 @@
 					keyboard: true
 				});
 				
+				$("#load-favorite-item-processing").html("");
 				$("#divCreateItemList #hiddenListName").val(listName);
 				$("#divCreateItemList #hiddenTypeId").val(typeId);
 				$("#divCreateItemList #itemName").val("");

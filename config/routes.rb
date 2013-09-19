@@ -18,6 +18,7 @@ ListsofLists::Application.routes.draw do
   post '/favorite_list/create_favorite_list'    => 'favorite_list#create_favorite_list'
   get '/favorite_list/delete_favorite_list'     => 'favorite_list#delete_favorite_list'
   get '/favorite_list/get_favorite_list_detail' => 'favorite_list#get_favorite_list_detail'
+  get '/favorite_list/show_correlate'           => 'favorite_list#show_correlate'
   match '/accounts/auth/facebook/callback'      => 'services#create'
   match '/accounts/auth/google_oauth2/callback' => 'services#create'
   match '/accounts/auth/twitter/callback'       => 'services#create'

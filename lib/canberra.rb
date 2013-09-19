@@ -1,18 +1,39 @@
 class Canberra
   # Canberra distance
   def distance(u, v)
+    if u.length != v.length
+      return nil
+    end
+    
     n = u.length - 1
     sum = 0.0
     
     for i in 0..n
-      denominator = u[i].abs + v[i].abs;
-      if denominator != 0
-        numerator = (u[i] - v[i]).abs
-        sum += numerator / denominator;
+      if u[i] == -1 || v[i] == -1
+        sum += 1.0 / n
+      else
+        denominator = u[i].abs + v[i].abs;
+        if denominator != 0
+          numerator = (u[i] - v[i]).abs
+          sum += numerator / denominator;
+        end
       end
     end
     
     return sum;
+  end
+  
+  def distance_v1(u, v)
+    ne = u.length
+    
+    if ne != v.length
+      return nil
+    end
+    
+    k = ne
+    helper = CanberraHelper.new
+    distance = helper.canberra_location(u, v, k)
+    exact = helper.exact_canberra(ne, k)
   end
   
   # Qualified canberra distance

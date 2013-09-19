@@ -161,7 +161,79 @@ class FavoriteListController < ApplicationController
     end
   end
   
-  #def show_correlate
+  def show_correlate
+    @correclatedLists = []
+    listId = params[:id]
+    yourFavoList = FavoriteList.find_by_id(listId)
+    typeId = yourFavoList.ranked_list_id
     
-  #end
+    yourFavoItems = FavoriteItem.find_all_by_favorite_list_id(listId)
+    yourFavoItems.sort_by{ |e| e[:name] }
+    yourRankedItemIds = yourFavoItems.map { |m| m[:ranked_item_id] }
+    
+    allRankedItems = RankedItem.find_all_by_ranked_list_id(typeId)
+    
+    # http://stackoverflow.com/questions/5739158/rails-ruby-how-to-sort-an-array
+    allRankedItems.sort_by{ |e| e[:name] }
+    allRankedItemIds = allRankedItems.map { |m| m[:id] }
+    
+    # http://stackoverflow.com/questions/6242311/quickly-get-index-of-array-element-in-ruby
+    hashAllIndexes = Hash[allRankedItemIds.map.with_index.to_a]
+    
+    yourIndexes = yourRankedItemIds.map { |m| hashAllIndexes[m] }
+    
+    # http://api.rubyonrails.org/classes/ActiveRecord/Base.html
+    otherFavoLists = FavoriteList.where("ranked_list_id = :ranked_list_id AND user_id <> :user_id",
+                                        { ranked_list_id: typeId, user_id: current_user.id })
+
+    correlateChecker = CorrelateChecker.new
+    
+    otherFavoLists.each do |item|
+      otherFavoItems = FavoriteItem.find_all_by_favorite_list_id(item.id)
+      otherFavoItems.sort_by{ |e| e[:name] }
+      otherRankedItemIds = otherFavoItems.map { |m| m[:ranked_item_id] }
+      otherIndexes = otherRankedItemIds.map { |m| hashAllIndexes[m] }
+      
+      canberra_value = correlateChecker.getDifference(yourIndexes, otherIndexes)
+      
+      if canberra_value != nil
+        corrList = MyFavoriteList.new
+        corrList.id = item.id
+        corrList.name = item.name
+        corrList.type_id = typeId
+        corrList.owner_id = item.user_id
+        corrList.canberra_value = canberra_value
+        
+        @correclatedLists.push corrList
+      end 
+    end
+    
+    @correclatedLists = @correclatedLists.sort_by { |e| e.canberra_value }
+    ownerIds = @correclatedLists.map { |m| m.owner_id }
+    users = User.find(ownerIds)
+    
+    @correclatedLists.each do |item|
+      user = users.find{ |x| x.id == item.owner_id }
+      item.owner_email = user.email
+      
+      if (user.fullname == nil || user.fullname == "")
+        item.owner_name = user.email
+      else
+        item.owner_name = user.fullname + " (" + user.email + ")"
+      end
+    end
+    
+    respond_to do |format|
+      format.json {
+        render :json => { :success => true, :data => @correclatedLists }
+      }
+    end
+  rescue Exception => ex
+    logger.fatal "Exception in show_correlate action: " + ex.message
+    respond_to do |format|
+      format.json {
+        render :json => { :success => false, :msg => ex.message }
+      }
+    end
+  end
 end

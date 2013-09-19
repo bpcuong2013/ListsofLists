@@ -69,6 +69,80 @@ module FavoriteListHelper
   end
   
   class CorrelateChecker
-    
+    def getDifference(arr1, arr2)
+      if arr1.length == 0 || arr2.length == 0
+        return nil
+      end
+      
+      mergedResult = (arr1 | arr2).sort
+      list1 = []
+      list2 = []
+      specialValue = -1
+      
+      #mergedResult.each do |item|
+      #  if arr1.include? item
+      #    list1.push item
+      #  else
+      #    list1.push specialValue
+      #  end
+        
+      #  if arr2.include? item
+      #    list2.push item
+      #  else
+      #    list2.push specialValue
+      #  end
+      #end
+      
+      all_hash = { }
+      arr1_hash = { }
+      arr2_hash = { }
+      
+      (0..(arr1.length-1)).each do |i|
+        result = arr1[i]
+        
+        if all_hash.has_key?(result)
+          all_hash[result] += 1
+        else
+          all_hash[result] = 1
+        end
+        
+        arr1_hash[result] = i
+      end
+      
+      (0..(arr2.length-1)).each do |i|
+        result = arr2[i]
+        
+        if all_hash.has_key?(result)
+          all_hash[result] += 1
+        else
+          all_hash[result] = 1
+        end
+        
+        arr2_hash[result] = i
+      end
+      
+      all_hash.keys.each do |key|
+        if arr1_hash.has_key?(key)
+          list1.push arr1_hash[key]
+        else
+          list1.push specialValue
+        end
+        
+        if arr2_hash.has_key?(key)
+          list2.push arr2_hash[key]
+        else
+          list2.push specialValue
+        end
+      end
+      
+      #puts all_hash
+      #puts arr1_hash
+      #puts arr2_hash
+      #puts list1
+      #puts list2
+      
+      #return Canberra.new.distance(list1, list2)
+      return Canberra.new.distanceq(list1, list2, false, true, true)
+    end
   end
 end
