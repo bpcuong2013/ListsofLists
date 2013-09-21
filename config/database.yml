@@ -1,17 +1,27 @@
 development:
-  adapter: sqlite3
-  database: db/development.sqlite3
-  pool: 5
-  timeout: 5000
+  adapter: postgresql
+  encoding: unicode
+  host: localhost
+  port: 5432
+  database: listsoflists-dev
+  username: postgres
+  password: postgres
   
 test:
-  adapter: sqlite3
-  database: db/test.sqlite3
-  pool: 5
-  timeout: 5000
+  adapter: postgresql
+  encoding: unicode
+  host: localhost
+  port: 5432
+  database: listsoflists-test
+  username: postgres
+  password: postgres
 
 production:
-  adapter: sqlite3
-  database: db/production.sqlite3
-  pool: 5
-  timeout: 5000
+  adapter: postgresql
+  encoding: unicode
+  host: ec2-54-225-218-144.compute-1.amazonaws.com
+  port: 5442
+  database: da54uoffiqqiqo
+  username: ipuxyedsgvucqr
+  password: mdAQeN-R1x0xyRwuOyd4uyp9rs
+  
