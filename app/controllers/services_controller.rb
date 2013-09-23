@@ -59,9 +59,9 @@ class ServicesController < ApplicationController
                 user.services.build(:provider => provider, :uid => uid, :uname => name, :uemail => email)
   
                 # do not send confirmation email, we directly save and confirm the new record
-                user.skip_confirmation!
+                #user.skip_confirmation!
                 user.save!
-                user.confirm!
+                #user.confirm!
   
                 # flash and sign in
                 flash[:myinfo] = 'Your account on ListsOfLists has been created via ' + provider.capitalize + '. In your profile you can change your personal information and add a local password.'
@@ -79,10 +79,10 @@ class ServicesController < ApplicationController
           if !auth
             current_user.services.create(:provider => provider, :uid => uid, :uname => name, :uemail => email)
             flash[:notice] = 'Sign in via ' + provider.capitalize + ' has been added to your account.'
-            redirect_to services_path
+            redirect_to "/"
           else
             flash[:notice] = service_route.capitalize + ' is already linked to your account.'
-            redirect_to services_path
+            redirect_to "/"
           end
         end
       else
