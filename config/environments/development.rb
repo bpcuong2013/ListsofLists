@@ -43,7 +43,7 @@ config.action_mailer.default_url_options = { :host => 'localhost:3000' }
       port:                 587,
       domain:               'gmail.com',
       user_name:            'noreply19812013@gmail.com',
-      password:             'g0g0away!',
+      password:             'g0g0away',
       authentication:       'plain',
       enable_starttls_auto: true  
   }

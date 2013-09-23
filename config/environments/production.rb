@@ -77,7 +77,7 @@ config.action_mailer.default_url_options = { :host => 'listsoflists-dev.herokuap
       port:                 587,
       domain:               'listsoflists-dev.herokuapp.com',
       user_name:            'noreply19812013@gmail.com',
-      password:             'g0g0away!',
+      password:             'g0g0away',
       authentication:       'plain',
       enable_starttls_auto: true  
   }

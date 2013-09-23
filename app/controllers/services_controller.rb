@@ -64,11 +64,11 @@ class ServicesController < ApplicationController
                 user.confirm!
   
                 # flash and sign in
-                flash[:myinfo] = 'Your account on FoundDataReport has been created via ' + provider.capitalize + '. In your profile you can change your personal information and add a local password.'
+                flash[:myinfo] = 'Your account on ListsOfLists has been created via ' + provider.capitalize + '. In your profile you can change your personal information and add a local password.'
                 sign_in_and_redirect(:user, user)
               end
             else
-              flash[:error] =  service_route.capitalize + ' can not be used to sign-up on FoundDataReport as no valid email address has been provided. Please use another authentication provider or use local sign-up. If you already have an account, please sign-in and add ' + service_route.capitalize + ' from your profile.'
+              flash[:error] =  service_route.capitalize + ' can not be used to sign-up on ListsOfLists as no valid email address has been provided. Please use another authentication provider or use local sign-up. If you already have an account, please sign-in and add ' + service_route.capitalize + ' from your profile.'
               redirect_to new_user_session_path
             end
           end
